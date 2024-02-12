@@ -97,9 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                 if (is_numeric($codeLieu)) {
                     if (intval($codeLieu) == 1) {
-                        $codeLieu = "Ouakam";
+                        $codeLieu = "1";
                     } elseif (intval($codeLieu) == 2) {
-                        $codeLieu = "Thiaroye";
+                        $codeLieu = "2";
                     }
                 }
             
