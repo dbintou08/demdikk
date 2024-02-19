@@ -27,13 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Lecture du fichier texte
         $lines = file($fichierTexteTemp, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
+           
             // Ajoutez ici votre logique pour extraire les données du fichier texte
             // ...
            // while (($line = fgets($file)) !== false) {
+           
                 if (strlen($line) < 12) {
                     continue;
                 }
-        
+                
                 $codeLieuEtPlaqueParts = str_split(substr($line, 0, 12), 6);
                 $codeLieu = "";
                 $plaque = "";
@@ -107,8 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $plaqueInt = intval($plaque);
             
                     //permet determiner categorie v en fonction plaque immatriculation
-            
-                    if (($plaqueInt >= 2 && $plaqueInt <= 1109) || strlen($plaque) == 5 || $plaqueInt == 1512 || $plaqueInt == 1501) {
+                    if ($plaque == "ATC") {
+                        $parc = "0004";
+                    } elseif (($plaqueInt >= 2 && $plaqueInt <= 1109) || strlen($plaque) == 5 || $plaqueInt == 1512 || $plaqueInt == 1501) {
                         $parc = "Utilitaire/V/";
                     } elseif ($plaqueInt >= 1339 && $plaqueInt <= 4004 || $plaqueInt == 1009) {
                         $parc = "Tata/Mini Bus/";
@@ -134,13 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    
                    
                 }
-            
-               // ...
-        
-        // ...
-        
-        // ...
-        
+                try {
+          
         $dateR = DateTime::createFromFormat("dmyHi", $date);
         
         // Ajout de déclarations de débogage
@@ -152,12 +150,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (is_numeric($kilometrage)) {
             $kilometrage = floatval($kilometrage) / 10;
         }
-       
-
+      
 
             // Exemple: Ajout de données dans le tableau
-// Exemple: Ajout de données dans le tableau
-          $dataArray[] = [$codeLieu, $plaque, $dateR->format("d/m/Y H:i"), $carburant, $kilometrage, $parc . $plaqueInt];
+
+            $dataArray[] = [$codeLieu, $plaque, ($dateR instanceof DateTime) ? $dateR->format("d/m/Y H:i") : 'Date non valide', $carburant, $kilometrage, $parc . $plaqueInt];
+        } catch (Exception $e) {
+            // En cas d'erreur, enregistrez l'erreur dans une cellule du fichier Excel
+            $dataArray[] = ['Erreur: ' . $e->getMessage()];
+        }
         }
 
         // Création du fichier Excel
@@ -167,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Sauvegarde du fichier Excel
         $excelWriter = new Xlsx($spreadsheet);
-        $excelFileName = 'resultat.xlsx';
+        $excelFileName = 'resultat ' . date('Y-m-d ') . '.xlsx'; 
         $excelWriter->save($excelFileName);
 
         // Envoi du fichier Excel au navigateur pour le téléchargement
@@ -178,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Suppression du fichier Excel temporaire
         unlink($excelFileName);
-
+        unlink($fichierTexteTemp);
         // Terminaison du script
         exit();
     } else {
