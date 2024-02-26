@@ -44,6 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $codeLieu = $codeLieuEtPlaqueParts[0];
                     $plaque = $codeLieuEtPlaqueParts[1];
                 }
+                if (substr($codeLieu, 0, 5) === '00002') {
+                    // Remplace tous les chiffres après les cinq premiers caractères par des espaces
+                    $codeLieu = substr_replace($codeLieu, str_repeat(' ', strlen($codeLieu) - 5), 5);
+                      // Remplacer toutes les séquences de deux chiffres par des espaces
+                      $plaque = substr_replace($plaque, '  ', 0, 1);                }
+
+                
+                
         
                 $reste = substr($line, 12);
         
@@ -145,12 +153,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //var_dump($codeLieu, $plaque, $dateR, $carburant, $kilometrage, $parc);
         
         if (is_numeric($carburant)) {
-            $carburant = number_format($carburant, 1, ',', '0');        }
+            $carburant = number_format($carburant, 1, ',', '');        }
         
-        if (is_numeric($kilometrage)) {
-            $kilometrage = floatval($kilometrage) / 10;
-        }
-      
+            if (is_numeric($kilometrage)) {
+                $kilometrage = number_format(floatval($kilometrage) / 10, 1, ',', ''); // Un chiffre après la virgule
+            }
 
             // Exemple: Ajout de données dans le tableau
 
@@ -160,6 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $dataArray[] = ['Erreur: ' . $e->getMessage()];
         }
         }
+        
 
         // Création du fichier Excel
         $spreadsheet = new Spreadsheet();
