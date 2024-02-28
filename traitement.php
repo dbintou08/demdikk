@@ -48,7 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Remplace tous les chiffres après les cinq premiers caractères par des espaces
                     $codeLieu = substr_replace($codeLieu, str_repeat(' ', strlen($codeLieu) - 5), 5);
                       // Remplacer toutes les séquences de deux chiffres par des espaces
-                      $plaque = substr_replace($plaque, '  ', 0, 1);                }
+                      $plaque = substr_replace($plaque, '  ', 0, 1);          
+                 }
 
                 
                 
