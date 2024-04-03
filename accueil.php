@@ -29,7 +29,7 @@ $nom_utilisateur = $_SESSION['nom_utilisateur'];
 
         <form action="traitement.php" method="post" enctype="multipart/form-data">
             <label for="file">Sélectionnez votre fichier texte :</label>
-            <input type="file" name="file" id="file" accept=".txt" required>
+            <input type="file" name="file" id="file" accept="*" required>
             <br>
             <input type="submit" name="submit" value="Téléverser et Convertir">
         </form>

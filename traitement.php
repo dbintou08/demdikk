@@ -6,7 +6,7 @@ require 'vendor/autoload.php';
 ob_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Vérifie si le fichier a été téléversé avec succès
+    // Vérification du fichier a  téléversé 
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
         $fichierTexteTemp = $_FILES['file']['tmp_name'];
 
@@ -27,11 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Lecture du fichier texte
         $lines = file($fichierTexteTemp, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
-           
-            // Ajoutez ici votre logique pour extraire les données du fichier texte
-            // ...
-           // while (($line = fgets($file)) !== false) {
-           
+
+            $line = preg_replace('/([A-Za-z]+)\d+/', '$1', $line);   
                 if (strlen($line) < 12) {
                     continue;
                 }
@@ -44,16 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $codeLieu = $codeLieuEtPlaqueParts[0];
                     $plaque = $codeLieuEtPlaqueParts[1];
                 }
-                if (substr($codeLieu, 0, 5) === '00002') {
-                    // Remplace tous les chiffres après les cinq premiers caractères par des espaces
-                    $codeLieu = substr_replace($codeLieu, str_repeat(' ', strlen($codeLieu) - 5), 5);
-                      // Remplacer toutes les séquences de deux chiffres par des espaces
-                      $plaque = substr_replace($plaque, '  ', 0, 1);          
-                 }
 
                 
-                
-        
+
+               
                 $reste = substr($line, 12);
         
                 $dateCarburantEtKilometrage = "";
@@ -64,15 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $dateR = null;
                 $positionDateCarburant = -1;
             
-                $reste = substr($line, 12); // creer une nouvelle chaine de caractere
-            
-                $dateCarburantEtKilometrage = "";
-                $date = "";
-                $carburant = "";
-                $kilometrage = "";
-                $parc = "";
-                $dateR = null;
-                $positionDateCarburant = -1;
             
                 for ($i = 0; $i < strlen($reste); $i++) { //permet de parcourir chaque caractere de la chaine et s arrete des il y carac nume
                     if (is_numeric($reste[$i])) {
@@ -105,6 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $kilometrage = substr($stringParc, 4);
                     }
                 }
+
+                
             
                 if (is_numeric($codeLieu)) {
                     if (intval($codeLieu) == 1) {
@@ -116,7 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
                 if (is_numeric($plaque)) { // verif si numeric verif
                     $plaqueInt = intval($plaque);
-            
+                    $plaqueInt = substr($plaqueInt, 0, 4);
+                   
+                    
                     //permet determiner categorie v en fonction plaque immatriculation
                     if ($plaque == "ATC") {
                         $parc = "0004";
@@ -144,21 +130,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $parc = "DTU IVECO/BUS/";
                     }
                    
-                   
+                    $plaque = substr($plaque, "0", 5);
                 }
                 try {
           
         $dateR = DateTime::createFromFormat("dmyHi", $date);
         
         // Ajout de déclarations de débogage
-        //var_dump($codeLieu, $plaque, $dateR, $carburant, $kilometrage, $parc);
-        
+
         if (is_numeric($carburant)) {
             $carburant = number_format($carburant, 1, ',', '');        }
         
             if (is_numeric($kilometrage)) {
                 $kilometrage = number_format(floatval($kilometrage) / 10, 1, ',', ''); // Un chiffre après la virgule
             }
+
 
             // Exemple: Ajout de données dans le tableau
 
